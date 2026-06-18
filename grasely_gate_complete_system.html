@@ -1,0 +1,1593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grasely Gate Schools - Admission Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1e40af;
+            --primary-dark: #1e3a8a;
+            --accent: #f59e0b;
+            --accent-light: #fcd34d;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --bg-light: #f9fafb;
+            --bg-white: #ffffff;
+            --border: #e5e7eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            background: var(--bg-white);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .cta-btn {
+            background: var(--primary);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: background 0.3s;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+        }
+
+        .cta-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Page Display */
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 6rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(20px); }
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            font-weight: 800;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--text-dark);
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-light);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            padding: 1rem 2rem;
+            border: 2px solid white;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: transparent;
+            color: white;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 4rem 2rem;
+            background: var(--bg-light);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: var(--primary);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+            border-top: 4px solid var(--primary);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+        }
+
+        /* Programs Section */
+        .programs {
+            padding: 4rem 2rem;
+            background: white;
+        }
+
+        .programs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .program-card {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .program-card:nth-child(2) {
+            background: linear-gradient(135deg, var(--accent), #f97316);
+        }
+
+        .program-card:nth-child(3) {
+            background: linear-gradient(135deg, var(--success), #059669);
+        }
+
+        .program-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .program-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .program-card ul {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .program-card li {
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .program-card li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        /* Stats Section */
+        .stats {
+            background: var(--primary);
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+
+        .stat-item h4 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Admission Form Section */
+        .admission {
+            padding: 4rem 2rem;
+            background: var(--bg-light);
+            min-height: 100vh;
+        }
+
+        .admission-content {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+        }
+
+        .admission-content h2 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-subtitle {
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .submit-btn {
+            background: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+        }
+
+        .submit-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .cancel-btn {
+            background: var(--text-light);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+        }
+
+        .cancel-btn:hover {
+            background: var(--text-dark);
+        }
+
+        /* Submission Confirmation */
+        .confirmation {
+            padding: 4rem 2rem;
+            background: var(--bg-light);
+            min-height: 100vh;
+        }
+
+        .confirmation-content {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+            text-align: center;
+        }
+
+        .success-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: bounceIn 0.6s ease-out;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .confirmation-content h2 {
+            color: var(--success);
+            margin-bottom: 1rem;
+        }
+
+        .reference-box {
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            border-left: 4px solid var(--success);
+        }
+
+        .reference-box h4 {
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .reference-code {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            font-family: monospace;
+            letter-spacing: 2px;
+        }
+
+        .info-table {
+            text-align: left;
+            margin: 2rem 0;
+            width: 100%;
+        }
+
+        .info-table tr {
+            border-bottom: 1px solid var(--border);
+        }
+
+        .info-table th {
+            padding: 0.75rem;
+            background: var(--bg-light);
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .info-table td {
+            padding: 0.75rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-approved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-rejected {
+            background: #fee2e2;
+            color: #7f1d1d;
+        }
+
+        /* Dashboard Section */
+        .dashboard {
+            padding: 4rem 2rem;
+            background: var(--bg-light);
+            min-height: 100vh;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .dashboard-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .dashboard-actions input {
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+            overflow: hidden;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th {
+            background: var(--primary);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        table tr:hover {
+            background: var(--bg-light);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-approve {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-approve:hover {
+            background: #059669;
+        }
+
+        .btn-reject {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-reject:hover {
+            background: #dc2626;
+        }
+
+        .btn-view {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-view:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Contact Section */
+        .contact {
+            padding: 4rem 2rem;
+            background: white;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .contact-item {
+            text-align: center;
+        }
+
+        .contact-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .contact-item h3 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-item a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .contact-item a:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--text-dark);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1rem;
+        }
+
+        .modal-header h3 {
+            color: var(--primary);
+        }
+
+        .close-btn {
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            color: var(--text-light);
+            border: none;
+            background: none;
+            padding: 0;
+        }
+
+        .close-btn:hover {
+            color: var(--text-dark);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                gap: 1rem;
+                font-size: 0.9rem;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .section-title {
+                font-size: 1.75rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+            }
+
+            .btn-primary,
+            .btn-secondary {
+                width: 100%;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+
+            table th, table td {
+                padding: 0.75rem;
+            }
+
+            .form-buttons {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-container {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                gap: 0.5rem;
+            }
+
+            .cta-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .logo {
+                font-size: 1.2rem;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a class="logo" onclick="showPage('home')">🎓 Grasely Gate</a>
+            <ul class="nav-links">
+                <li><a onclick="showPage('home')">Home</a></li>
+                <li><a onclick="showPage('admission')">Apply</a></li>
+                <li><a onclick="showPage('tracking')">Track Status</a></li>
+                <li><a onclick="showPage('dashboard')">Admin</a></li>
+                <li><a onclick="showPage('contact')">Contact</a></li>
+            </ul>
+            <button class="cta-btn" onclick="showPage('admission')">Apply Now</button>
+        </div>
+    </nav>
+
+    <!-- HOME PAGE -->
+    <div id="home" class="page active">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Excellence in Education</h1>
+                <p>Welcome to Grasely Gate Schools, where we nurture young minds and shape future leaders through quality education and holistic development.</p>
+                <div class="hero-buttons">
+                    <button class="btn-primary" onclick="showPage('admission')">Start Admission</button>
+                    <button class="btn-secondary" onclick="showPage('contact')">Learn More</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features">
+            <div class="container">
+                <h2 class="section-title">Why Choose Grasely Gate?</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🏫</div>
+                        <h3>Modern Facilities</h3>
+                        <p>State-of-the-art classrooms, science labs, computer centers, and sports facilities.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">👨‍🏫</div>
+                        <h3>Experienced Staff</h3>
+                        <p>Dedicated and qualified teachers committed to student success.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🌍</div>
+                        <h3>Global Curriculum</h3>
+                        <p>Comprehensive education combining national and international standards.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🏆</div>
+                        <h3>Academic Excellence</h3>
+                        <p>Consistent outstanding results with high pass rates.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🤝</div>
+                        <h3>Supportive Community</h3>
+                        <p>Strong parent-teacher partnerships and nurturing environment.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">⭐</div>
+                        <h3>Character Development</h3>
+                        <p>Focus on moral values, discipline, and leadership qualities.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Programs Section -->
+        <section class="programs">
+            <div class="container">
+                <h2 class="section-title">Our Programs</h2>
+                <div class="programs-grid">
+                    <div class="program-card">
+                        <h3>Nursery & Pre-Primary</h3>
+                        <p style="margin-bottom: 1rem;">Early childhood education focused on play-based learning</p>
+                        <ul>
+                            <li>Ages 2-5 years</li>
+                            <li>Foundational skills</li>
+                            <li>Language & numeracy</li>
+                            <li>Creative activities</li>
+                        </ul>
+                    </div>
+                    <div class="program-card">
+                        <h3>Primary Education</h3>
+                        <p style="margin-bottom: 1rem;">Comprehensive primary education grades 1-6</p>
+                        <ul>
+                            <li>Core subjects mastery</li>
+                            <li>Critical thinking skills</li>
+                            <li>Science & technology</li>
+                            <li>Arts & sports</li>
+                        </ul>
+                    </div>
+                    <div class="program-card">
+                        <h3>Secondary Education</h3>
+                        <p style="margin-bottom: 1rem;">Advanced education preparing for future</p>
+                        <ul>
+                            <li>STEM subjects</li>
+                            <li>Humanities & languages</li>
+                            <li>Career guidance</li>
+                            <li>University preparation</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="stats">
+            <div class="container">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <h4>500+</h4>
+                        <p>Students Enrolled</p>
+                    </div>
+                    <div class="stat-item">
+                        <h4>40+</h4>
+                        <p>Qualified Staff</p>
+                    </div>
+                    <div class="stat-item">
+                        <h4>95%</h4>
+                        <p>Pass Rate</p>
+                    </div>
+                    <div class="stat-item">
+                        <h4>15+</h4>
+                        <p>Years Excellence</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ADMISSION PAGE -->
+    <div id="admission" class="page">
+        <section class="admission">
+            <div class="container">
+                <div class="admission-content">
+                    <h2>📋 Apply for Admission</h2>
+                    <p class="form-subtitle">Fill out the form below to start your child's journey at Grasely Gate Schools. Our admission team will review your application and contact you within 24 hours.</p>
+                    
+                    <form id="admissionForm" onsubmit="submitAdmission(event)">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="parent-name">Parent/Guardian Name *</label>
+                                <input type="text" id="parent-name" name="parent-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="student-name">Student Name *</label>
+                                <input type="text" id="student-name" name="student-name" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="date-of-birth">Date of Birth *</label>
+                                <input type="date" id="date-of-birth" name="date-of-birth" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="grade">Applying for Grade *</label>
+                                <select id="grade" name="grade" required>
+                                    <option value="">Select Grade</option>
+                                    <option value="Nursery">Nursery</option>
+                                    <option value="Pre-Primary">Pre-Primary</option>
+                                    <option value="Grade 1">Grade 1</option>
+                                    <option value="Grade 2">Grade 2</option>
+                                    <option value="Grade 3">Grade 3</option>
+                                    <option value="Grade 4">Grade 4</option>
+                                    <option value="Grade 5">Grade 5</option>
+                                    <option value="Grade 6">Grade 6</option>
+                                    <option value="Grade 7 (JSS 1)">Grade 7 (JSS 1)</option>
+                                    <option value="Grade 8 (JSS 2)">Grade 8 (JSS 2)</option>
+                                    <option value="Grade 9 (JSS 3)">Grade 9 (JSS 3)</option>
+                                    <option value="Grade 10 (SSS 1)">Grade 10 (SSS 1)</option>
+                                    <option value="Grade 11 (SSS 2)">Grade 11 (SSS 2)</option>
+                                    <option value="Grade 12 (SSS 3)">Grade 12 (SSS 3)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="email">Email Address *</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone Number *</label>
+                                <input type="tel" id="phone" name="phone" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="address">Residential Address *</label>
+                            <textarea id="address" name="address" required></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="prev-school">Previous School (if any)</label>
+                            <input type="text" id="prev-school" name="prev-school">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="message">Additional Information</label>
+                            <textarea id="message" name="message" placeholder="Tell us about your child's interests and achievements..."></textarea>
+                        </div>
+
+                        <div class="form-buttons">
+                            <button type="submit" class="submit-btn">Submit Application</button>
+                            <button type="button" class="cancel-btn" onclick="showPage('home')">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- SUBMISSION CONFIRMATION PAGE -->
+    <div id="confirmation" class="page">
+        <section class="confirmation">
+            <div class="container">
+                <div class="confirmation-content">
+                    <div class="success-icon">✅</div>
+                    <h2>Application Submitted Successfully!</h2>
+                    <p style="color: var(--text-light); margin-bottom: 1.5rem;">Your application has been received and is now under surveillance for verification before final admission.</p>
+                    
+                    <div class="reference-box">
+                        <h4>Your Application Reference Number:</h4>
+                        <div class="reference-code" id="refCode"></div>
+                        <p style="margin-top: 0.5rem; color: var(--text-light); font-size: 0.9rem;">Save this number to track your application status</p>
+                    </div>
+
+                    <div style="text-align: left; margin: 2rem 0;">
+                        <h4 style="color: var(--primary); margin-bottom: 1rem;">Application Summary:</h4>
+                        <table class="info-table">
+                            <tr>
+                                <th>Field</th>
+                                <th>Details</th>
+                            </tr>
+                            <tr>
+                                <td><strong>Student Name</strong></td>
+                                <td id="conf-student-name"></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Parent Name</strong></td>
+                                <td id="conf-parent-name"></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Grade Applied</strong></td>
+                                <td id="conf-grade"></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Email</strong></td>
+                                <td id="conf-email"></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Phone</strong></td>
+                                <td id="conf-phone"></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Status</strong></td>
+                                <td><span class="status-badge status-pending">⏳ Under Review</span></td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div style="background: #e0e7ff; padding: 1.5rem; border-radius: 8px; margin: 2rem 0;">
+                        <h4 style="color: var(--primary); margin-bottom: 0.5rem;">📌 Next Steps:</h4>
+                        <ul style="list-style: none; color: var(--text-dark);">
+                            <li style="margin-bottom: 0.5rem;">✓ Your application is under surveillance and verification</li>
+                            <li style="margin-bottom: 0.5rem;">✓ We will conduct a background check and verify your information</li>
+                            <li style="margin-bottom: 0.5rem;">✓ You will receive an email notification when the verification is complete</li>
+                            <li style="margin-bottom: 0.5rem;">✓ Upon approval, we will contact you to finalize the enrollment process</li>
+                        </ul>
+                    </div>
+
+                    <p style="color: var(--text-light); margin: 2rem 0; font-size: 0.95rem;">
+                        Questions? Contact us at <a href="mailto:admissions@graselygate.com" style="color: var(--primary);">admissions@graselygate.com</a> or call <a href="tel:+2347000000000" style="color: var(--primary);">+234 700 0000 000</a>
+                    </p>
+
+                    <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                        <button class="btn-primary" style="flex: 1;" onclick="showPage('tracking')">Track Application</button>
+                        <button class="btn-secondary" style="flex: 1; background: var(--text-light); color: white;" onclick="showPage('home')">Back to Home</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- TRACKING PAGE -->
+    <div id="tracking" class="page">
+        <section class="admission">
+            <div class="container">
+                <div class="admission-content">
+                    <h2>📱 Track Your Application</h2>
+                    <p class="form-subtitle">Enter your reference number or email to check the status of your application.</p>
+                    
+                    <div class="form-group">
+                        <label for="track-ref">Reference Number or Email *</label>
+                        <input type="text" id="track-ref" placeholder="Enter your reference code or email address">
+                    </div>
+
+                    <button class="submit-btn" onclick="trackApplication()" style="margin-bottom: 2rem;">Search Application</button>
+
+                    <div id="trackingResult" style="display: none;">
+                        <div class="reference-box" style="border-left: 4px solid var(--primary);">
+                            <h4>Application Status</h4>
+                            <table class="info-table">
+                                <tr>
+                                    <td><strong>Reference Number:</strong></td>
+                                    <td id="track-ref-num"></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Student Name:</strong></td>
+                                    <td id="track-student"></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Parent Name:</strong></td>
+                                    <td id="track-parent"></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Applied Grade:</strong></td>
+                                    <td id="track-applied-grade"></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Application Date:</strong></td>
+                                    <td id="track-date"></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Current Status:</strong></td>
+                                    <td id="track-status"></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Expected Result:</strong></td>
+                                    <td id="track-result"></td>
+                                </tr>
+                            </table>
+
+                            <div style="margin-top: 2rem;">
+                                <h4 style="color: var(--primary); margin-bottom: 1rem;">Status Timeline:</h4>
+                                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                                    <div style="display: flex; align-items: center; gap: 1rem;">
+                                        <div style="width: 30px; height: 30px; border-radius: 50%; background: var(--success); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">✓</div>
+                                        <div>
+                                            <strong>Application Received</strong>
+                                            <p style="color: var(--text-light); font-size: 0.9rem;">Your application was received successfully</p>
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 1rem;">
+                                        <div style="width: 30px; height: 30px; border-radius: 50%; background: var(--warning); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">⏳</div>
+                                        <div>
+                                            <strong>Under Surveillance</strong>
+                                            <p style="color: var(--text-light); font-size: 0.9rem;">Verification and background check in progress</p>
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 1rem;">
+                                        <div style="width: 30px; height: 30px; border-radius: 50%; background: #d1d5db; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">○</div>
+                                        <div>
+                                            <strong>Review Complete</strong>
+                                            <p style="color: var(--text-light); font-size: 0.9rem;">Admission decision will be announced</p>
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 1rem;">
+                                        <div style="width: 30px; height: 30px; border-radius: 50%; background: #d1d5db; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">○</div>
+                                        <div>
+                                            <strong>Final Admission</strong>
+                                            <p style="color: var(--text-light); font-size: 0.9rem;">Complete enrollment process if approved</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ADMIN DASHBOARD -->
+    <div id="dashboard" class="page">
+        <section class="dashboard">
+            <div class="container">
+                <div class="dashboard-header">
+                    <h2 class="section-title">📊 Admin Dashboard</h2>
+                    <div class="dashboard-actions">
+                        <input type="text" id="search-input" placeholder="Search by name or email..." style="flex: 1; min-width: 200px;">
+                        <button class="submit-btn" style="width: auto;" onclick="filterApplications()">Search</button>
+                    </div>
+                </div>
+
+                <div style="background: white; padding: 2rem; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.07);">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                        <div style="text-align: center;">
+                            <h3 style="color: var(--primary); font-size: 2rem;" id="totalApps">0</h3>
+                            <p style="color: var(--text-light);">Total Applications</p>
+                        </div>
+                        <div style="text-align: center;">
+                            <h3 style="color: var(--warning); font-size: 2rem;" id="pendingApps">0</h3>
+                            <p style="color: var(--text-light);">Under Review</p>
+                        </div>
+                        <div style="text-align: center;">
+                            <h3 style="color: var(--success); font-size: 2rem;" id="approvedApps">0</h3>
+                            <p style="color: var(--text-light);">Approved</p>
+                        </div>
+                        <div style="text-align: center;">
+                            <h3 style="color: var(--danger); font-size: 2rem;" id="rejectedApps">0</h3>
+                            <p style="color: var(--text-light);">Rejected</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <div class="table-responsive">
+                        <table id="applicationsTable">
+                            <thead>
+                                <tr>
+                                    <th>Ref #</th>
+                                    <th>Student Name</th>
+                                    <th>Parent Name</th>
+                                    <th>Grade</th>
+                                    <th>Email</th>
+                                    <th>Applied Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="applicationsBody">
+                            </tbody>
+                        </table>
+                        <p style="text-align: center; padding: 2rem; color: var(--text-light);" id="noDataMsg">No applications yet. Submitted applications will appear here.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- APPLICATION DETAILS MODAL -->
+    <div id="detailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Application Details</h3>
+                <button class="close-btn" onclick="closeModal()">×</button>
+            </div>
+            <div id="modalBody"></div>
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                <button class="submit-btn" onclick="approveApplication()">✓ Approve</button>
+                <button class="cancel-btn" onclick="rejectApplication()">✗ Reject</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTACT PAGE -->
+    <div id="contact" class="page">
+        <section class="contact" style="padding: 4rem 2rem; background: var(--bg-light);">
+            <div class="container">
+                <h2 class="section-title">Get in Touch</h2>
+                <div class="contact-grid">
+                    <div class="contact-item">
+                        <div class="contact-icon">📍</div>
+                        <h3>Campus Locations</h3>
+                        <p>
+                            <strong>Main Campus:</strong><br>
+                            6/12 Shodipe Road, Olambe, Ifo<br>
+                            Ogun State, Nigeria
+                        </p>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">📞</div>
+                        <h3>Contact Numbers</h3>
+                        <p>
+                            <strong>Main Office:</strong><br>
+                            <a href="tel:+2347000000000">+234 700 0000 000</a><br><br>
+                            <strong>Admissions:</strong><br>
+                            <a href="tel:+2347000000001">+234 700 0000 001</a>
+                        </p>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">✉️</div>
+                        <h3>Email Address</h3>
+                        <p>
+                            <a href="mailto:admissions@graselygate.com">admissions@graselygate.com</a><br><br>
+                            <a href="mailto:info@graselygate.com">info@graselygate.com</a>
+                        </p>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">⏰</div>
+                        <h3>School Hours</h3>
+                        <p>
+                            <strong>Primary & Secondary:</strong><br>
+                            7:00 AM - 4:00 PM<br><br>
+                            <strong>Nursery:</strong><br>
+                            8:00 AM - 3:00 PM
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Grasely Gate Schools. All rights reserved. | Excellence in Education</p>
+        <p style="margin-top: 1rem; opacity: 0.8;">Follow us: <a href="https://instagram.com/graselygateschools" style="color: var(--accent);">Instagram</a> | <a href="https://facebook.com/graselygatecollege" style="color: var(--accent);">Facebook</a></p>
+    </footer>
+
+    <script>
+        // Store applications data
+        let applications = JSON.parse(localStorage.getItem('applications')) || [];
+        let currentViewingApp = null;
+
+        // Show/hide pages
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+            window.scrollTo(0, 0);
+            
+            if (pageId === 'dashboard') {
+                refreshDashboard();
+            }
+        }
+
+        // Generate unique reference number
+        function generateRefNumber() {
+            return 'GGS-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+        }
+
+        // Submit admission form
+        function submitAdmission(event) {
+            event.preventDefault();
+
+            const formData = {
+                refNumber: generateRefNumber(),
+                studentName: document.getElementById('student-name').value,
+                parentName: document.getElementById('parent-name').value,
+                dateOfBirth: document.getElementById('date-of-birth').value,
+                grade: document.getElementById('grade').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                address: document.getElementById('address').value,
+                prevSchool: document.getElementById('prev-school').value,
+                message: document.getElementById('message').value,
+                appliedDate: new Date().toLocaleDateString(),
+                status: 'Under Review',
+                approvalDate: null
+            };
+
+            // Save to localStorage
+            applications.push(formData);
+            localStorage.setItem('applications', JSON.stringify(applications));
+
+            // Display confirmation page with data
+            document.getElementById('refCode').textContent = formData.refNumber;
+            document.getElementById('conf-student-name').textContent = formData.studentName;
+            document.getElementById('conf-parent-name').textContent = formData.parentName;
+            document.getElementById('conf-grade').textContent = formData.grade;
+            document.getElementById('conf-email').textContent = formData.email;
+            document.getElementById('conf-phone').textContent = formData.phone;
+
+            // Reset form and show confirmation page
+            document.getElementById('admissionForm').reset();
+            showPage('confirmation');
+        }
+
+        // Track application
+        function trackApplication() {
+            const searchTerm = document.getElementById('track-ref').value.trim();
+            
+            if (!searchTerm) {
+                alert('Please enter a reference number or email address');
+                return;
+            }
+
+            const application = applications.find(app => 
+                app.refNumber.toUpperCase() === searchTerm.toUpperCase() || 
+                app.email.toLowerCase() === searchTerm.toLowerCase()
+            );
+
+            if (!application) {
+                alert('Application not found. Please check your reference number or email.');
+                return;
+            }
+
+            // Display tracking results
+            document.getElementById('trackingResult').style.display = 'block';
+            document.getElementById('track-ref-num').textContent = application.refNumber;
+            document.getElementById('track-student').textContent = application.studentName;
+            document.getElementById('track-parent').textContent = application.parentName;
+            document.getElementById('track-applied-grade').textContent = application.grade;
+            document.getElementById('track-date').textContent = application.appliedDate;
+            
+            let statusBadge = `<span class="status-badge status-pending">⏳ ${application.status}</span>`;
+            if (application.status === 'Approved') {
+                statusBadge = `<span class="status-badge status-approved">✓ ${application.status}</span>`;
+            } else if (application.status === 'Rejected') {
+                statusBadge = `<span class="status-badge status-rejected">✗ ${application.status}</span>`;
+            }
+            
+            document.getElementById('track-status').innerHTML = statusBadge;
+            document.getElementById('track-result').textContent = application.approvalDate ? `Decision made on ${application.approvalDate}` : 'Pending decision';
+
+            document.getElementById('track-ref').value = '';
+        }
+
+        // Refresh dashboard
+        function refreshDashboard() {
+            const tableBody = document.getElementById('applicationsBody');
+            const noDataMsg = document.getElementById('noDataMsg');
+
+            tableBody.innerHTML = '';
+
+            if (applications.length === 0) {
+                noDataMsg.style.display = 'block';
+            } else {
+                noDataMsg.style.display = 'none';
+                applications.forEach(app => {
+                    const row = document.createElement('tr');
+                    let statusClass = 'status-pending';
+                    if (app.status === 'Approved') statusClass = 'status-approved';
+                    if (app.status === 'Rejected') statusClass = 'status-rejected';
+
+                    row.innerHTML = `
+                        <td>${app.refNumber}</td>
+                        <td>${app.studentName}</td>
+                        <td>${app.parentName}</td>
+                        <td>${app.grade}</td>
+                        <td>${app.email}</td>
+                        <td>${app.appliedDate}</td>
+                        <td><span class="status-badge ${statusClass}">${app.status}</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-sm btn-view" onclick="viewApplicationDetails('${app.refNumber}')">View</button>
+                                <button class="btn-sm btn-approve" onclick="updateApplicationStatus('${app.refNumber}', 'Approved')">Approve</button>
+                                <button class="btn-sm btn-reject" onclick="updateApplicationStatus('${app.refNumber}', 'Rejected')">Reject</button>
+                            </div>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+
+            // Update stats
+            document.getElementById('totalApps').textContent = applications.length;
+            document.getElementById('pendingApps').textContent = applications.filter(a => a.status === 'Under Review').length;
+            document.getElementById('approvedApps').textContent = applications.filter(a => a.status === 'Approved').length;
+            document.getElementById('rejectedApps').textContent = applications.filter(a => a.status === 'Rejected').length;
+        }
+
+        // View application details
+        function viewApplicationDetails(refNumber) {
+            const app = applications.find(a => a.refNumber === refNumber);
+            if (!app) return;
+
+            currentViewingApp = refNumber;
+
+            const modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = `
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div>
+                        <p><strong>Reference Number:</strong> ${app.refNumber}</p>
+                        <p><strong>Student Name:</strong> ${app.studentName}</p>
+                        <p><strong>Parent Name:</strong> ${app.parentName}</p>
+                        <p><strong>Date of Birth:</strong> ${app.dateOfBirth}</p>
+                    </div>
+                    <div>
+                        <p><strong>Applied Grade:</strong> ${app.grade}</p>
+                        <p><strong>Email:</strong> ${app.email}</p>
+                        <p><strong>Phone:</strong> ${app.phone}</p>
+                        <p><strong>Applied Date:</strong> ${app.appliedDate}</p>
+                    </div>
+                </div>
+                <hr style="margin: 1rem 0; border: none; border-top: 1px solid var(--border);">
+                <div>
+                    <p><strong>Residential Address:</strong></p>
+                    <p style="color: var(--text-light);">${app.address}</p>
+                </div>
+                <div style="margin-top: 1rem;">
+                    <p><strong>Previous School:</strong></p>
+                    <p style="color: var(--text-light);">${app.prevSchool || 'N/A'}</p>
+                </div>
+                <div style="margin-top: 1rem;">
+                    <p><strong>Additional Information:</strong></p>
+                    <p style="color: var(--text-light);">${app.message || 'N/A'}</p>
+                </div>
+                <div style="margin-top: 1rem; padding: 1rem; background: var(--bg-light); border-radius: 6px;">
+                    <p><strong>Current Status:</strong> <span class="status-badge" style="margin-left: 0.5rem;">${app.status}</span></p>
+                </div>
+            `;
+
+            document.getElementById('detailsModal').classList.add('show');
+        }
+
+        // Approve application
+        function approveApplication() {
+            if (currentViewingApp) {
+                updateApplicationStatus(currentViewingApp, 'Approved');
+                closeModal();
+            }
+        }
+
+        // Reject application
+        function rejectApplication() {
+            if (currentViewingApp) {
+                updateApplicationStatus(currentViewingApp, 'Rejected');
+                closeModal();
+            }
+        }
+
+        // Update application status
+        function updateApplicationStatus(refNumber, newStatus) {
+            const app = applications.find(a => a.refNumber === refNumber);
+            if (app) {
+                app.status = newStatus;
+                app.approvalDate = new Date().toLocaleDateString();
+                localStorage.setItem('applications', JSON.stringify(applications));
+                refreshDashboard();
+                alert(`Application ${newStatus} successfully!`);
+            }
+        }
+
+        // Filter applications
+        function filterApplications() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const rows = document.getElementById('applicationsBody').querySelectorAll('tr');
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('detailsModal').classList.remove('show');
+            currentViewingApp = null;
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('detailsModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // Load dashboard on page load
+        window.addEventListener('load', () => {
+            refreshDashboard();
+        });
+    </script>
+</body>
+</html>
